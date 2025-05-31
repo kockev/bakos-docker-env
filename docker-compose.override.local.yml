@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  db_backend:
+    ports:
+      - 3306:3306
+    restart: "no"
+
+  php_backend:
+    build:
+      context: .
+      args:
+        INSTALL_XDEBUG: true
+    restart: "no"
+    volumes:
+      - ./src/backend:/var/www/backend/current/:cached
+    environment:
+      OPCACHE_ENABLE: 0
+      OPCACHE_ENABLE_CLI: 0
+      OPCACHE_VALIDATE_TIMESTAMPS: 0
+      PHP_IDE_CONFIG: "serverName=${COMPOSE_PROJECT_NAME}.local"
+      XDEBUG_CONFIG: "default_enable=1 idekey=PHPSTORM client_host=host.docker.internal client_port=9003 start_with_request=yes"
+      XDEBUG_MODE: "debug"
+
+  webserver:
+    restart: "no"
+    volumes:
+      - ./src/backend:/var/www/backend/current/:cached
+    environment:
+      BACKEND_SERVER_NAME: ${COMPOSE_PROJECT_NAME}.local
+
+  html2pdf:
+    restart: "no"
+    environment:
+      NODE_ENV: development

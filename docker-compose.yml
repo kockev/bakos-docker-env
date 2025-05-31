@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  db_backend:
+    image: mysql:latest
+    container_name: ${COMPOSE_PROJECT_NAME}-db_backend
+    restart: always
+    volumes:
+      - db_backend:/var/lib/mysql
+    networks:
+      - backend
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT}
+      DOCKER_NAME: ${COMPOSE_PROJECT_NAME}-db_backend
+      MYSQL_DATABASE: ${BACKEND_DB}
+      MYSQL_PASSWORD: ${BACKEND_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${BACKEND_DB_ROOT_PASSWORD}
+      MYSQL_USER: ${BACKEND_DB_USER}
+
+  php_backend:
+    build:
+      context: ./
+      dockerfile: build/php_backend/Dockerfile
+      args:
+        ENVIRONMENT: ${ENVIRONMENT}
+    container_name: ${COMPOSE_PROJECT_NAME}-php_backend
+    restart: always
+    depends_on:
+      - db_backend
+    volumes:
+      - composer_cache:/var/www/.composer:cached
+    networks:
+      - backend
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT}
+      DOCKER_NAME: ${COMPOSE_PROJECT_NAME}-php_backend
+      DB_DATABASE: ${BACKEND_DB}
+      DB_HOST: "db_backend"
+      DB_NAME: ${BACKEND_DB}
+      DB_PASSWORD: ${BACKEND_DB_PASSWORD}
+      DB_USERNAME: ${BACKEND_DB_USER}
+      PROJECT_PATH: "/var/www/backend/current/"
+
+  webserver:
+    build:
+      context: ./
+      dockerfile: build/webserver/Dockerfile
+      args:
+        ENVIRONMENT: ${ENVIRONMENT}
+    container_name: ${COMPOSE_PROJECT_NAME}-webserver
+    restart: always
+    depends_on:
+      - php_backend
+    volumes:
+      - ./config/webserver/sites-enabled/:/etc/nginx/sites-enabled/:cached
+      - ./certs:/etc/nginx/certs
+    networks:
+      - backend
+    ports:
+      - 80:80
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT}
+      DOCKER_NAME: ${COMPOSE_PROJECT_NAME}-webserver
+      BACKEND_PROJECT_PATH: "/var/www/backend/current/"
+
+  html2pdf:
+    build:
+      context: ./
+      dockerfile: build/html2pdf/Dockerfile
+      args:
+        ENVIRONMENT: ${ENVIRONMENT}
+    container_name: ${COMPOSE_PROJECT_NAME}-html2pdf
+    restart: always
+    networks:
+      - backend
+    ports:
+      - 3000:3000
+    command: node /usr/src/app/pdf/server.js
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT}
+      NODE_ENV: ${ENVIRONMENT}
+      DOCKER_NAME: ${COMPOSE_PROJECT_NAME}-html2pdf
+
+networks:
+  backend:
+
+volumes:
+  composer_cache:
+  db_backend:

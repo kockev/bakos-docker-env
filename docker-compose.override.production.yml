@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  db_backend:
+    ports:
+      - 3306:3306
+
+  php_backend:
+    build:
+      context: .
+      args:
+        INSTALL_XDEBUG: false
+    volumes:
+      - ./src/backend:/var/www/backend/current/:cached
+
+  webserver:
+    volumes:
+      - ./src/backend:/var/www/backend/current/:cached
+    environment:
+      BACKEND_SERVER_NAME: "${COMPOSE_PROJECT_NAME}.production"

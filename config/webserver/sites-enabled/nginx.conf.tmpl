@@ -1,0 +1,55 @@
+server {
+    listen 443 ssl;
+    server_name  ${COMPOSE_PROJECT_NAME}.${ENVIRONMENT};
+    
+    ssl on;
+    ssl_certificate     /etc/nginx/certs/${COMPOSE_PROJECT_NAME}.${ENVIRONMENT};
+    ssl_certificate_key /etc/nginx/certs/${COMPOSE_PROJECT_NAME}.${ENVIRONMENT};
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers on;
+
+}
+
+server {
+    listen         80;
+    listen         [::]:80;
+
+    server_name    ${COMPOSE_PROJECT_NAME}.${ENVIRONMENT};
+
+    root ${PROJECT_PATH_REPORTING}/public;
+
+    index index.php;
+    autoindex off;
+    charset UTF-8;
+
+    location = /favicon.ico {
+        log_not_found off;
+        access_log off;
+    }
+
+    location = /robots.txt {
+        try_files $uri $uri/ /index.php?$query_string;
+        allow all;
+        log_not_found off;
+        access_log off;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        fastcgi_pass   ${PHP_HOST_BACKEND}:9000;
+        fastcgi_index  index.php;
+        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+        fastcgi_param  PATH_INFO        $fastcgi_path_info;
+        fastcgi_param  HTTPS  on;
+        include        fastcgi_params;
+    }
+
+    location ~* \.(ico|jpg|jpeg|gif|svg|js|css|swf|eot|ttf|otf|woff|woff2)$ {
+        add_header Cache-Control "public";
+        expires +1y;
+        log_not_found off;
+    }
+}
