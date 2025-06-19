@@ -1,7 +1,7 @@
 #!/bin/bash
+set -e
 
 # Generate config files from .tmpl templates using environment variables
-
 echo "Generating Nginx config files from templates..."
 
 # Collect all environment variable names for envsubst
@@ -20,9 +20,10 @@ done
 echo "Nginx config generation completed."
 
 # Self-signed certification generation
-set -e
+echo "Self-signed certification generation..."
 
-DOMAIN=${DOMAIN:-localhost}
+DOMAIN=${BACKEND_SERVER_NAME}
+echo "🔍 Using domain: $DOMAIN"
 CERT_PATH="/etc/nginx/certs/${DOMAIN}.pem"
 
 if [ ! -f "$CERT_PATH" ]; then
@@ -39,3 +40,5 @@ if [ ! -f "$CERT_PATH" ]; then
 fi
 
 nginx -g "daemon off;"
+
+echo "Certification generation has finished"

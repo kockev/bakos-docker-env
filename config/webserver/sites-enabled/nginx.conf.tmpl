@@ -1,22 +1,13 @@
 server {
     listen 443 ssl;
-    server_name  ${COMPOSE_PROJECT_NAME}.${ENVIRONMENT};
+    server_name  ${BACKEND_SERVER_NAME};
     
-    ssl on;
-    ssl_certificate     /etc/nginx/certs/${COMPOSE_PROJECT_NAME}.${ENVIRONMENT};
-    ssl_certificate_key /etc/nginx/certs/${COMPOSE_PROJECT_NAME}.${ENVIRONMENT};
+    ssl_certificate     /etc/nginx/certs/${BACKEND_SERVER_NAME}.pem;
+    ssl_certificate_key /etc/nginx/certs/${BACKEND_SERVER_NAME}.pem;
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_prefer_server_ciphers on;
 
-}
-
-server {
-    listen         80;
-    listen         [::]:80;
-
-    server_name    ${COMPOSE_PROJECT_NAME}.${ENVIRONMENT};
-
-    root ${PROJECT_PATH_REPORTING}/public;
+    root ${BACKEND_PROJECT_PATH}/public;
 
     index index.php;
     autoindex off;
@@ -39,7 +30,7 @@ server {
     }
 
     location ~ \.php$ {
-        fastcgi_pass   ${PHP_HOST_BACKEND}:9000;
+        fastcgi_pass   php_backend:9000;  #php_backend -> container name
         fastcgi_index  index.php;
         fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
         fastcgi_param  PATH_INFO        $fastcgi_path_info;

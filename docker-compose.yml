@@ -58,6 +58,7 @@ services:
       - backend
     ports:
       - 80:80
+      - 443:443
     environment:
       ENVIRONMENT: ${ENVIRONMENT}
       DOCKER_NAME: ${COMPOSE_PROJECT_NAME}-webserver
