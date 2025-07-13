@@ -15,7 +15,8 @@ RUN apt-get update && apt-get install -y \
     curl \
     libonig-dev \
     libzip-dev \
-    libxml2-dev
+    libxml2-dev \
+    supervisor
 
 # Install Xdebug only if the build argument INSTALL_XDEBUG is set to true
 ARG INSTALL_XDEBUG=false

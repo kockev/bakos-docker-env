@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db_backend:
     ports:
@@ -21,6 +19,13 @@ services:
       PHP_IDE_CONFIG: "serverName=${COMPOSE_PROJECT_NAME}.local"
       XDEBUG_CONFIG: "default_enable=1 idekey=PHPSTORM client_host=host.docker.internal client_port=9003 start_with_request=yes"
       XDEBUG_MODE: "debug"
+
+  php_worker:
+    build:
+      context: .
+    restart: "no"
+    volumes:
+      - ./src/backend:/var/www/backend/current/:cached
 
   webserver:
     restart: "no"

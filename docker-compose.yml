@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db_backend:
     image: mysql:latest
@@ -40,6 +38,15 @@ services:
       DB_PASSWORD: ${BACKEND_DB_PASSWORD}
       DB_USERNAME: ${BACKEND_DB_USER}
       PROJECT_PATH: "/var/www/backend/current/"
+
+  php_worker:
+    container_name: ${COMPOSE_PROJECT_NAME}-php_worker
+    extends: php_backend
+    volumes:
+      - ./config/php_worker/supervisor.conf:/etc/supervisor.conf:ro
+    command: "/usr/bin/supervisord -c /etc/supervisor.conf"
+    environment:
+      DOCKER_NAME: ${COMPOSE_PROJECT_NAME}-php_worker
 
   webserver:
     build:
