@@ -31,7 +31,7 @@ jobs:
         run: |
           ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.DEPLOY_USER }}@${{ secrets.SSH_HOST }} "\
             cp '${{ env.DEPLOY_DIR }}/.env.example' '${{ env.DEPLOY_DIR }}/.env' && \
-            cp '${{ env.DEPLOY_DIR }}/docker-compose.override..yml' '${{ env.DEPLOY_DIR }}/docker-compose.override.yml'"
+            cp '${{ env.DEPLOY_DIR }}/docker-compose.override.yml' '${{ env.DEPLOY_DIR }}/docker-compose.override.yml'"
 
       - name: Build and run Docker containers
         run: |
