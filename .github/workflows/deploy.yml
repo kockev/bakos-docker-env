@@ -1,6 +1,7 @@
 name: Deploy Docker Environment to Server
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - production
