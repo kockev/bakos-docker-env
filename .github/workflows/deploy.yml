@@ -21,7 +21,7 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+          ssh-keyscan "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
 
       - name: Sync project to server (copy from runner to server)
         run: |
@@ -30,7 +30,7 @@ jobs:
 
       - name: Set up environment file
         run: |
-          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.DEPLOY_USER }}@${{ secrets.SSH_HOST }} "\
+          ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.SSH_HOST }} "\
             cp '${{ env.DEPLOY_DIR }}/.env.example' '${{ env.DEPLOY_DIR }}/.env' && \
             cp '${{ env.DEPLOY_DIR }}/docker-compose.override.yml' '${{ env.DEPLOY_DIR }}/docker-compose.override.yml'"
 
