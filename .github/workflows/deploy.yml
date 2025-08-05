@@ -25,19 +25,19 @@ jobs:
 
       - name: Sync project to server (copy from runner to server)
         run: |
-          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.SSH_HOST }} "mkdir -p ${{ env.DEPLOY_DIR }}"
-          rsync -az -e "ssh -i ~/.ssh/id_ed25519" ./ ${{ secrets.DEPLOY_USER }}@${{ secrets.SSH_HOST }}:${{ env.DEPLOY_DIR }}
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.SSH_HOST }} "mkdir -p ${{ secrets.DEPLOY_DIR }}"
+          rsync -az -e "ssh -i ~/.ssh/id_ed25519" ./ ${{ secrets.DEPLOY_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_DIR }}
 
       - name: Set up environment file
         run: |
           ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.SSH_HOST }} "\
-            cp '${{ env.DEPLOY_DIR }}/.env.example' '${{ env.DEPLOY_DIR }}/.env' && \
-            cp '${{ env.DEPLOY_DIR }}/docker-compose.override.yml' '${{ env.DEPLOY_DIR }}/docker-compose.override.yml'"
+            cp '${{ secrets.DEPLOY_DIR }}/.env.example' '${{ secrets.DEPLOY_DIR }}/.env' && \
+            cp '${{ secrets.DEPLOY_DIR }}/docker-compose.override.yml' '${{ secrets.DEPLOY_DIR }}/docker-compose.override.yml'"
 
       - name: Build and run Docker containers
         run: |
           ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.SSH_HOST }} "\
-            cd '${{ env.DEPLOY_DIR }}' && \
+            cd '${{ secrets.DEPLOY_DIR }}' && \
             docker compose pull && \
             docker compose build && \
             docker compose up -d --remove-orphans"
