@@ -25,7 +25,6 @@ jobs:
 
       - name: Sync project to server (copy from runner to server)
         run: |
-          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.SSH_HOST }} "mkdir -p ${{ secrets.DEPLOY_DIR }}"
           rsync -az -e "ssh -i ~/.ssh/id_ed25519" ./ ${{ secrets.DEPLOY_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_DIR }}
 
       - name: Set up environment file
