@@ -38,6 +38,7 @@ services:
       DB_PASSWORD: ${BACKEND_DB_PASSWORD}
       DB_USERNAME: ${BACKEND_DB_USER}
       PROJECT_PATH: "/var/www/backend/current/"
+    working_dir: /var/www/backend/current/
 
   php_worker:
     container_name: ${COMPOSE_PROJECT_NAME}-php_worker
