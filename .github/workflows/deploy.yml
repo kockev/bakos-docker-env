@@ -37,6 +37,7 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.DEPLOY_USER }}@${{ secrets.SSH_HOST }} "\
             cd '${{ secrets.DEPLOY_DIR }}' && \
+            docker compose down --remove-orphans && \
             docker compose pull && \
             docker compose build && \
             docker compose up -d --remove-orphans"
