@@ -23,19 +23,40 @@ echo "Nginx config generation completed."
 echo "Self-signed certification generation..."
 
 DOMAIN=${BACKEND_SERVER_NAME}
-echo "🔍 Using domain: $DOMAIN"
+echo "Using domain: $DOMAIN"
 CERT_PATH="/etc/nginx/certs/${DOMAIN}.pem"
 
-if [ ! -f "$CERT_PATH" ]; then
-  echo "🛠  Creating self-signed certificate for $DOMAIN"
-  openssl req -x509 -nodes -newkey rsa:2048 \
-    -keyout "/etc/nginx/certs/${DOMAIN}.key" \
-    -out "/etc/nginx/certs/${DOMAIN}.crt" \
-    -subj "/CN=${DOMAIN}" \
-    -days 365
+if [ "$ENVIRONMENT" != "production" ]; then
+    echo "Generating self-signed certificate for $DOMAIN (non-production)"
+    if [ ! -f "$CERT_PATH" ]; then
+      echo "🛠  Creating self-signed certificate for $DOMAIN"
+      openssl req -x509 -nodes -newkey rsa:2048 \
+        -keyout "/etc/nginx/certs/${DOMAIN}.key" \
+        -out "/etc/nginx/certs/${DOMAIN}.crt" \
+        -subj "/CN=${DOMAIN}" \
+        -days 365
 
-  cat "/etc/nginx/certs/${DOMAIN}.crt" "/etc/nginx/certs/${DOMAIN}.key" > "$CERT_PATH"
-  rm "/etc/nginx/certs/${DOMAIN}.crt" "/etc/nginx/certs/${DOMAIN}.key"
+      cat "/etc/nginx/certs/${DOMAIN}.crt" "/etc/nginx/certs/${DOMAIN}.key" > "$CERT_PATH"
+      rm "/etc/nginx/certs/${DOMAIN}.crt" "/etc/nginx/certs/${DOMAIN}.key"
+
+    fi
+else
+    echo "Production environment: obtain real certificate with certbot"
+
+    if [ ! -f "$CERT_PATH" ]; then
+        apt-get update && apt-get install -y certbot python3-certbot-nginx
+        certbot --nginx -d "$DOMAIN" -d "www.$DOMAIN" --non-interactive --agree-tos -m admin@$DOMAIN
+        ln -sf "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" "$CERT_PATH"
+        ln -sf "/etc/letsencrypt/live/$DOMAIN/privkey.pem" "/etc/nginx/certs/${DOMAIN}.key"
+    fi
+
+    echo "Starting background certbot renewal loop..."
+    (
+      while true; do
+        certbot renew --quiet --post-hook "nginx -s reload"
+        sleep 12h
+      done
+    ) &
 
 fi
 
