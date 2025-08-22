@@ -1,5 +1,10 @@
 FROM nginx:latest
 
+# Install certbot and nginx plugin at build time
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends certbot python3-certbot-nginx && \
+    rm -rf /var/lib/apt/lists/*
+
 RUN set -x && \
     # tiny helper to reload nginx config
     printf '#!/bin/bash\n/usr/sbin/nginx -s reload\n' >> /usr/local/bin/nginx-reload && \
@@ -7,6 +12,7 @@ RUN set -x && \
     # delete nginx default server config
     rm /etc/nginx/conf.d/default.conf
 
+# Copy custom nginx base config
 COPY ./config/webserver/default /etc/nginx/
 
 # Set the build-time variable
@@ -27,7 +33,7 @@ RUN if [ "$ENVIRONMENT" = "local" ]; then \
  && echo "Contents of /root/.bashrc:" \
  && cat /root/.bashrc
 
-# Self-signed certification generation
+# Self-signed OR or official certification creation
 # Copy into the container
 COPY build/webserver/entrypoint.sh /usr/local/bin/entrypoint.sh
 
