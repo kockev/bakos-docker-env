@@ -15,4 +15,4 @@ services:
     volumes:
       - ./src/backend:/var/www/backend/current/:cached
     environment:
-      BACKEND_SERVER_NAME: "bakosdietas.hu www.bakosdietas.hu"
+      BACKEND_SERVER_NAME: "bakosdietas.hu"
