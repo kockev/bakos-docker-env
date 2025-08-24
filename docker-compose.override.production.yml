@@ -14,5 +14,7 @@ services:
   webserver:
     volumes:
       - ./src/backend:/var/www/backend/current/:cached
+      - ./certs:/etc/letsencrypt
+      - ./certbot:/var/www/certbot
     environment:
       BACKEND_SERVER_NAME: "bakosdietas.hu"
