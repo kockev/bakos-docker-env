@@ -16,5 +16,8 @@ services:
       - ./src/backend:/var/www/backend/current/:cached
       - ./certs:/etc/letsencrypt
       - ./certbot:/var/www/certbot
+    ports:
+      - "80:80"
+      - "443:443"
     environment:
       BACKEND_SERVER_NAME: "bakosdietas.hu"
