@@ -1,20 +1,36 @@
 #!/bin/bash
 set -e
 
-trap exit TERM
+DOMAIN=${BACKEND_SERVER_NAME}
+EMAIL="admin@${DOMAIN}"
+CERT_DIR="/etc/letsencrypt/live/${DOMAIN}"
+NGINX_CERT_DIR="/etc/nginx/certs"
 
-DOMAIN="bakosdietas.hu"
-EMAIL="admin@bakosdietas.hu"
-WEBROOT="/var/www/certbot"
+# Ensure cert directories exist
+mkdir -p /var/www/certbot "$NGINX_CERT_DIR"
 
-echo "Starting Certbot for domain: $DOMAIN"
+echo "=== Starting Certbot container for $DOMAIN ==="
 
-while true; do
-  certbot certonly --webroot -w $WEBROOT \
-    -d $DOMAIN -d www.$DOMAIN \
-    --email $EMAIL \
-    --agree-tos --non-interactive || true
+# Loop forever, renewing every 12h
+while :; do
+  echo ">>> Requesting/Renewing certificates for $DOMAIN ..."
 
-  echo "Certbot run completed. Sleeping for 12h..."
+  certbot certonly --webroot \
+    -w /var/www/certbot \
+    -d "$DOMAIN" -d "www.$DOMAIN" \
+    --email "$EMAIL" \
+    --agree-tos \
+    --non-interactive || true
+
+  # If certs exist, create/update symlinks for Nginx
+  if [ -d "$CERT_DIR" ]; then
+    echo ">>> Creating symlinks in $NGINX_CERT_DIR"
+    ln -sf "$CERT_DIR/fullchain.pem" "$NGINX_CERT_DIR/${DOMAIN}.pem"
+    ln -sf "$CERT_DIR/privkey.pem"   "$NGINX_CERT_DIR/${DOMAIN}.key"
+  else
+    echo "!!! Certificate directory $CERT_DIR not found (certbot may have failed)"
+  fi
+
+  echo ">>> Sleeping 12h before next renewal check..."
   sleep 12h
 done
