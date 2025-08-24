@@ -42,6 +42,13 @@ if [ "$ENVIRONMENT" != "production" ]; then
 else
     echo "Production environment: obtain real certificate with certbot"
 
+    # Start temporary Nginx to serve ACME challenge
+    nginx -g "daemon off;" &
+    NGINX_PID=$!
+
+    # Wait a few seconds for Nginx to start
+    sleep 3
+
     # Run certbot with webroot
     certbot certonly --webroot \
       -w /var/www/certbot \
@@ -50,6 +57,10 @@ else
       --email admin@$DOMAIN \
       --agree-tos \
       --non-interactive \
+
+    # Stop temporary Nginx
+    kill $NGINX_PID
+    wait $NGINX_PID 2>/dev/null || true
 
     # Symlink certs into /etc/nginx/certs just like local self-signed ones
     ln -sf "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" "/etc/nginx/certs/${DOMAIN}.pem"

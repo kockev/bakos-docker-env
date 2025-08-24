@@ -1,12 +1,16 @@
 FROM nginx:latest
 
-# Install certbot and nginx plugin at build time
+# Install Certbot
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends certbot && \
+    apt-get install -y software-properties-common && \
+    add-apt-repository ppa:certbot/certbot && \
+    apt-get update && \
+    apt-get install -y certbot python3-certbot-nginx && \
     rm -rf /var/lib/apt/lists/*
 
-# Create webroot dir for ACME challenge
-RUN mkdir -p /var/www/certbot
+# Create directories for ACME challenge and certificates
+RUN mkdir -p /var/www/certbot /etc/letsencrypt /etc/nginx/certs && \
+    chown -R www-data:www-data /var/www/certbot /etc/letsencrypt /etc/nginx/certs
 
 RUN set -x && \
     # tiny helper to reload nginx config
