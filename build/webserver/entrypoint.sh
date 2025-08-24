@@ -42,13 +42,14 @@ if [ "$ENVIRONMENT" != "production" ]; then
 else
     echo "Production environment: obtain real certificate with certbot"
 
-    # Create webroot dir for ACME challenge
-    mkdir -p /var/www/certbot
-
     # Run certbot with webroot
-    certbot certonly --webroot -w /var/www/certbot \
-      -d "$DOMAIN" -d "www.$DOMAIN" \
-      --email admin@$DOMAIN --agree-tos --non-interactive
+    certbot certonly --webroot \
+      -w /var/www/certbot \
+      -d "$DOMAIN" \
+      -d "www.$DOMAIN" \
+      --email admin@$DOMAIN \
+      --agree-tos \
+      --non-interactive \
 
     # Symlink certs into /etc/nginx/certs just like local self-signed ones
     ln -sf "/etc/letsencrypt/live/$DOMAIN/fullchain.pem" "/etc/nginx/certs/${DOMAIN}.pem"

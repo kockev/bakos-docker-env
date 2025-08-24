@@ -5,6 +5,9 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends certbot python3-certbot-nginx && \
     rm -rf /var/lib/apt/lists/*
 
+# Create webroot dir for ACME challenge
+RUN mkdir -p /var/www/certbot
+
 RUN set -x && \
     # tiny helper to reload nginx config
     printf '#!/bin/bash\n/usr/sbin/nginx -s reload\n' >> /usr/local/bin/nginx-reload && \
