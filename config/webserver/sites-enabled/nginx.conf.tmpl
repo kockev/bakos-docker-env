@@ -1,11 +1,12 @@
-# HTTP - only for Certbot and redirect
+# HTTP — ACME + redirect
 server {
     listen 80;
-    server_name ${BACKEND_SERVER_NAME};
+    server_name ${BACKEND_SERVER_NAME} www.${BACKEND_SERVER_NAME};
 
-    # Certbot will place files here for domain validation
-    location /.well-known/acme-challenge/ {
+    # Certbot HTTP-01 challenge
+    location ^~ /.well-known/acme-challenge/ {
         root /var/www/certbot;
+        default_type "text/plain";
     }
 
     # Redirect everything else to HTTPS
@@ -21,6 +22,7 @@ server {
     
     ssl_certificate     /etc/nginx/certs/${BACKEND_SERVER_NAME}.pem;
     ssl_certificate_key /etc/nginx/certs/${BACKEND_SERVER_NAME}.key;
+    
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_prefer_server_ciphers on;
 

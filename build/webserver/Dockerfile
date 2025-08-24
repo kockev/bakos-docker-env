@@ -1,14 +1,8 @@
 FROM nginx:latest
 
-# Install Certbot and Nginx plugin directly from Debian repo
-RUN apt-get update && \
-    apt-get install -y certbot python3-certbot-nginx && \
-    rm -rf /var/lib/apt/lists/*hon3-certbot-nginx && \
-    rm -rf /var/lib/apt/lists/*
-
-# Create directories for ACME challenge and certificates
-RUN mkdir -p /var/www/certbot /etc/letsencrypt /etc/nginx/certs && \
-    chown -R www-data:www-data /var/www/certbot /etc/letsencrypt /etc/nginx/certs
+# Create directories for ACME challenge and certs
+RUN mkdir -p /var/www/certbot /etc/nginx/certs && \
+    chown -R www-data:www-data /var/www/certbot /etc/nginx/certs
 
 RUN set -x && \
     # tiny helper to reload nginx config
