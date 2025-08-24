@@ -11,6 +11,13 @@ services:
     volumes:
       - ./src/backend:/var/www/backend/current/:cached
 
+  certbot:
+    build:
+      context: ./build/certbot
+    volumes:
+      - ./certs:/etc/letsencrypt
+      - ./certbot:/var/www/certbot
+
   webserver:
     volumes:
       - ./src/backend:/var/www/backend/current/:cached
@@ -21,3 +28,5 @@ services:
       - "443:443"
     environment:
       BACKEND_SERVER_NAME: "bakosdietas.hu"
+    depends_on:
+      - certbot
