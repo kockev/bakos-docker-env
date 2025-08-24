@@ -2,7 +2,7 @@ FROM nginx:latest
 
 # Install certbot and nginx plugin at build time
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends certbot python3-certbot-nginx && \
+    apt-get install -y --no-install-recommends certbot && \
     rm -rf /var/lib/apt/lists/*
 
 # Create webroot dir for ACME challenge
