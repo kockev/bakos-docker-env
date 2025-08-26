@@ -45,6 +45,10 @@ RUN if [ "$ENVIRONMENT" = "local" ]; then \
  && echo "Contents of /root/.bashrc:" \
  && cat /root/.bashrc
 
+# Set permission and owenership for webserver user to create files in storage and cache
+RUN chown -R www-data:www-data /var/www/backend/current/storage /var/www/backend/current/bootstrap/cache \
+    && chmod -R 775 /var/www/backend/current/storage /var/www/backend/current/bootstrap/cache
+
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
