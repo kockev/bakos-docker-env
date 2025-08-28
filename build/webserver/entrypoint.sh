@@ -21,27 +21,22 @@ echo "Nginx config generation completed."
 
 DOMAIN=${BACKEND_SERVER_NAME}
 echo "Using domain: $DOMAIN"
-CERT_PATH="/etc/nginx/certs/${DOMAIN}.pem"
+
+CERT_KEY="/etc/nginx/certs/${DOMAIN}.key"
+CERT_PEM="/etc/nginx/certs/${DOMAIN}.pem"
 
 # Self-signed certification generation
-if [ "$ENVIRONMENT" != "production" ]; then
-    echo "Generating self-signed certificate for $DOMAIN (non-production)"
-    if [ ! -f "$CERT_PATH" ]; then
-      echo "Creating self-signed certificate for $DOMAIN"
-      openssl req -x509 -nodes -newkey rsa:2048 \
-        -keyout "/etc/nginx/certs/${DOMAIN}.key" \
-        -out "/etc/nginx/certs/${DOMAIN}.crt" \
-        -subj "/CN=${DOMAIN}" \
-        -days 365
-
-      cat "/etc/nginx/certs/${DOMAIN}.crt" "/etc/nginx/certs/${DOMAIN}.key" > "$CERT_PATH"
-      rm "/etc/nginx/certs/${DOMAIN}.crt" "/etc/nginx/certs/${DOMAIN}.key"
-
-    fi
+if [ ! -f "$CERT_KEY" ] || [ ! -f "$CERT_PEM" ]; then
+  echo "No certificate found, generating self-signed cert for $DOMAIN"
+  openssl req -x509 -nodes -newkey rsa:2048 \
+     -keyout "$CERT_KEY" \
+     -out "$CERT_PEM" \
+     -subj "/CN=${DOMAIN}" \
+     -days 365
 else
-    echo "Production mode: expecting certs to be provided by Certbot container"
+  echo "Certificate already exists, skipping self-signed generation"
 fi
-
+  
 nginx -g "daemon off;"
 
 echo "Certification generation has finished"

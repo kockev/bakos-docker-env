@@ -16,8 +16,8 @@ services:
       context: ./build/certbot
     container_name: ${COMPOSE_PROJECT_NAME}-certbot
     volumes:
+      - ./letsencrypt:/etc/letsencrypt
       - ./certs:/etc/nginx/certs
-      - ./certs:/etc/letsencrypt
       - ./certbot:/var/www/certbot
 
   webserver:
@@ -25,9 +25,9 @@ services:
       - certbot
     volumes:
       - ./src/backend:/var/www/backend/current/:cached
+      - ./letsencrypt:/etc/letsencrypt:ro
       - ./certs:/etc/nginx/certs
       - ./certbot:/var/www/certbot
-      - ./certs:/etc/letsencrypt
     ports:
       - "80:80"
       - "443:443"
