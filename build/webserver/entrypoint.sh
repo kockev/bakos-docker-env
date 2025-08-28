@@ -36,6 +36,16 @@ if [ ! -f "$CERT_KEY" ] || [ ! -f "$CERT_PEM" ]; then
 else
   echo "Certificate already exists, skipping self-signed generation"
 fi
+
+# Watch cert folder and reload nginx when certification has changed
+(
+  echo "Starting cert watcher..."
+  while true; do
+    inotifywait -e close_write,create,delete /etc/nginx/certs
+    echo "Certs changed, reloading nginx..."
+    nginx -s reload
+  done
+) &
   
 nginx -g "daemon off;"
 

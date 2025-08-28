@@ -1,5 +1,8 @@
 FROM nginx:latest
 
+# Install inotify-tools for watching cert changes
+RUN apt-get update && apt-get install -y inotify-tools && rm -rf /var/lib/apt/lists/*
+
 # Create directories for ACME challenge and certs
 RUN mkdir -p /var/www/certbot /etc/nginx/certs && \
     chown -R www-data:www-data /var/www/certbot /etc/nginx/certs
