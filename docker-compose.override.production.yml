@@ -19,6 +19,8 @@ services:
       - ./letsencrypt:/etc/letsencrypt
       - ./certs:/etc/nginx/certs
       - ./certbot:/var/www/certbot
+    environment:
+      BACKEND_SERVER_NAME: "bakosdietas.hu"
 
   webserver:
     depends_on:
