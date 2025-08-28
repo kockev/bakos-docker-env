@@ -27,9 +27,6 @@ while :; do
     echo ">>> Creating symlinks in $NGINX_CERT_DIR"
     ln -sf "$CERT_DIR/fullchain.pem" "$NGINX_CERT_DIR/${DOMAIN}.pem"
     ln -sf "$CERT_DIR/privkey.pem"   "$NGINX_CERT_DIR/${DOMAIN}.key"
-
-    echo ">>> Reloading Nginx to apply new certificates"
-    docker kill -s HUP nginx || true
   else
     echo "!!! Certificate directory $CERT_DIR not found (certbot may have failed)"
   fi
