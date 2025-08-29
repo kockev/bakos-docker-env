@@ -11,6 +11,12 @@ services:
     volumes:
       - ./src/backend:/var/www/backend/current/:cached
 
+  php_worker:
+    build:
+      context: .
+    volumes:
+      - ./src/backend:/var/www/backend/current/:cached
+
   certbot:
     build:
       context: ./build/certbot
