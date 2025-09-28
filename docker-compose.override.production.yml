@@ -3,6 +3,24 @@ services:
     ports:
       - 3306:3306
 
+  db_backup:
+    build:
+      context: ./build/db_backup
+      args:
+        ENVIRONMENT: ${ENVIRONMENT}
+    container_name: ${COMPOSE_PROJECT_NAME}-db_backup
+    volumes:
+      - ./backups:/backups
+    networks:
+      - backend
+    depends_on:
+      - db_backend
+    environment:
+      MYSQL_HOST: db_backend
+      MYSQL_USER: ${BACKEND_DB_USER}
+      MYSQL_PASSWORD: ${BACKEND_DB_PASSWORD}
+      MYSQL_DATABASE: ${BACKEND_DB}
+
   php_backend:
     build:
       context: .
