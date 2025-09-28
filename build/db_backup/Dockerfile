@@ -1,5 +1,8 @@
 From mysql:latest
 
+# Install cron
+RUN apt-get update && apt-get install -y cron && rm -rf /var/lib/apt/lists/*
+
 # Create backup folder
 RUN mkdir -p /backups
 
