@@ -1,10 +1,4 @@
-FROM alpine:latest
-
-# Install MySQL client, bash, coreutils, and cron
-RUN apk add --no-cache mysql-client bash coreutils tzdata
-
-# Set timezone if needed (default UTC)
-ENV TZ=UTC
+From mysql:latest
 
 # Create backup folder
 RUN mkdir -p /backups
