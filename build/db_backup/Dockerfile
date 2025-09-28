@@ -1,7 +1,9 @@
-From mysql:latest
+FROM debian:bookworm-slim
 
-# Install cron
-RUN apt-get update && apt-get install -y cron && rm -rf /var/lib/apt/lists/*
+# Install MySQL client and cron
+RUN apt-get update && \
+    apt-get install -y default-mysql-client cron && \
+    rm -rf /var/lib/apt/lists/*
 
 # Create backup folder
 RUN mkdir -p /backups
