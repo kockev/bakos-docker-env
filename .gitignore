@@ -1,6 +1,7 @@
 docker-compose.override.yml
 /certs/*
 config/webserver/sites-enabled/nginx.conf
+/backups/*
 
 .env
 .idea

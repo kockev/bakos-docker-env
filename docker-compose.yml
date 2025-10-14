@@ -1,10 +1,15 @@
 services:
   db_backend:
-    image: mysql:latest
+    build:
+      context: ./
+      dockerfile: build/db_backend/Dockerfile
+      args:
+        ENVIRONMENT: ${ENVIRONMENT}
     container_name: ${COMPOSE_PROJECT_NAME}-db_backend
     restart: always
     volumes:
       - db_backend:/var/lib/mysql
+      - ./backups:/backups
     networks:
       - backend
     environment:
@@ -89,6 +94,18 @@ services:
       ENVIRONMENT: ${ENVIRONMENT}
       NODE_ENV: ${ENVIRONMENT}
       DOCKER_NAME: ${COMPOSE_PROJECT_NAME}-html2pdf
+
+  cron:
+    container_name: ${COMPOSE_PROJECT_NAME}-cron
+    image: mcuadros/ofelia:latest
+    network_mode: "none"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/share/zoneinfo/:/usr/share/zoneinfo/
+      - ./config/cron/config.${ENVIRONMENT}.ini:/etc/ofelia/config.ini
+    restart: always
+    environment:
+      TZ: "Europe/Vienna"
 
 networks:
   backend:
