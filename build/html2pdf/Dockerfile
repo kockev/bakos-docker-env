@@ -30,7 +30,8 @@ RUN apt-get update && apt-get install -y \
     libxkbcommon0 \
     --no-install-recommends \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && ln -s /usr/bin/chromium /usr/bin/chromium-browser
 
 WORKDIR /usr/src/app/pdf
 
